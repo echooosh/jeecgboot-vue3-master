@@ -17,7 +17,7 @@
       </div>
 
       <!-- 其他卡片 -->
-      <div v-for="(item, idx) in topCards" :key="idx" class="md:w-1/4">
+      <div v-for="(item, idx) in topCards" :key="idx" class="md:w-1/4" @click="clickToShift(item.title)">
         <a-card :class="item.class" :body-style="{ width: '100%', position: 'relative' }" :bordered="false">
           <div class="title">{{ item.title }}</div>
           <div class="content">
@@ -34,7 +34,7 @@
     </div>
     <div class="md:flex enter-y md:h-3/4">
       <div class="md:w-1/4 md:flex md:flex-col w-full">
-        <div v-for="(item, idx) in leftCards" :key="idx" class="md:h-1/3">
+        <div v-for="(item, idx) in leftCards" :key="idx" class="md:h-1/3" @click="clickToShift(item.title)">
           <a-card
             class="!md:mr-4 !mt-4 quantity"
             style="height: calc(100% - 16px)"
@@ -62,7 +62,8 @@
         >
           <div style="display: flex; align-items: center; border-bottom: 1px solid #e8e8e8">
             <div class="title">通知公告</div>
-            <div class="extra-wrapper">
+            <!-- 时间查询暂时去掉 -->
+            <!-- <div class="extra-wrapper">
               <div class="extra-item">
                 <a>今日</a>
                 <a>本周</a>
@@ -70,12 +71,16 @@
                 <a>本年</a>
               </div>
               <a-range-picker :style="{ width: '256px' }" />
-            </div>
+            </div> -->
           </div>
-          <div class="content" style="width: 100%; height: calc(100% - 44px - 42px); overflow: auto; max-height: 840px">
+          <div
+            class="content"
+            style="width: 100%; height: calc(100% - 44px - 42px); overflow: auto; max-height: 840px"
+            @click="clickToShift('通知公告')"
+          >
             <Timeline v-if="timelineItems.length > 0">
               <TimelineItem v-for="(item, index) in timelineItems" :key="index" class="timeline-item">
-                <div class="notice">{{ item.name }}</div>
+                <div class="notice">{{ item.name + '-' + item.materialDesc }}</div>
                 <div class="time">{{ item.createTime.slice(0, 10) }}</div>
               </TimelineItem>
             </Timeline>
@@ -115,8 +120,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import axios from 'axios';
-  import { ref, watch, onMounted, computed } from 'vue';
+  import { ref, watch, computed } from 'vue';
+  import { useRouter } from 'vue-router';
   import { message } from 'ant-design-vue';
   import { getLoginfo, getVisitInfo, getNoticeInfoApi, countAllApi } from '../api';
   import { useRootSetting } from '/@/hooks/setting/useRootSetting';
@@ -136,6 +141,8 @@
   import { Timeline, TimelineItem } from 'ant-design-vue';
   import { Pagination } from 'ant-design-vue';
   import { getLoginTenantName, customsNameMap } from '/@/views/system/tenant/tenant.api';
+
+  const router = useRouter();
   const APagination = Pagination;
   const loading = ref(true);
   const { getThemeColor } = useRootSetting();
@@ -144,6 +151,7 @@
     type: string;
     value: number | string;
     color: string;
+    materialDesc: string;
   }
   setTimeout(() => {
     loading.value = false;
@@ -292,21 +300,31 @@
       url: menu41,
     },
   ]);
-  function reportPageVisit() {
-    // 获取当前页面文件名
-    const pagePath = window.location.pathname.split('/').pop();
-    axios
-      .post('/govmap/appTenantPageVisit/increment', { pagePath })
-      .then((res) => {
-        console.log('访问量统计成功', res.data);
-      })
-      .catch((err) => {
-        console.error('访问量统计失败', err);
-      });
+  function clickToShift(title: string) {
+    switch (title) {
+      case '海关数量':
+        router.push('/govmap/org/appOrgList');
+        break;
+      case '办事大厅数量':
+        router.push('/govmap/hall/appHallList');
+        break;
+      case '事项分类数量':
+        router.push('/govmap/cate/appCateList');
+        break;
+      case '办事事项':
+        router.push('/govmap/item/appItemList');
+        break;
+      case '纠错信息数量':
+        router.push('/online/cgformList/8460cef190ea4e4a997bb854d09222e6');
+        break;
+      case '通知公告':
+        router.push('/govmap/notice/appRelatedNoticeList');
+        break;
+      default:
+        // 地图访问量 或其他不跳转项
+        break;
+    }
   }
-  onMounted(() => {
-    reportPageVisit();
-  });
 </script>
 
 <style lang="less" scoped>
@@ -483,6 +501,27 @@
     align-items: center;
     justify-content: center;
     font-size: 16px;
+    cursor: pointer;
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      content: '';
+      background-color: #c3e7fe;
+      opacity: 0; /* 默认不显示 */
+      transition: opacity 0.3s; /* 添加过渡效果 */
+    }
+    &:hover {
+      box-shadow: inset 0 0 0 1px #c3e7fe;
+      .title {
+        color: #1b53ae;
+      }
+
+      &::after {
+        opacity: 0.5;
+      }
+    }
 
     .title {
       font-size: 24px;
