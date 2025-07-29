@@ -5,11 +5,56 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, computed, unref } from 'vue';
+  import { ref, computed, unref, onMounted } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from '../AppRelatedNotice.data';
   import { saveOrUpdate } from '../AppRelatedNotice.api';
+  import { queryOrgTreeList, list as getHallList } from '/@/views/govmap/hall/AppHall.api';
+
+  onMounted(async () => {
+    const cascaderOptions = ref<any[]>([]);
+    queryOrgTreeList().then(async (res) => {
+      if (res.success) {
+        if (Array.isArray(res.result)) {
+          const orgTree = res.result;
+          const result = await Promise.all(
+            orgTree.map(async (org: any) => {
+              const halls = await getHallList({ orgId: org.key });
+              return {
+                label: org.title,
+                value: org.key,
+                children: halls.records?.map((hall: any) => ({
+                  label: hall.hallName,
+                  value: hall.id,
+                })),
+              };
+            })
+          );
+          cascaderOptions.value = result;
+          const hallField = formSchema.find((f) => f.field === 'hallId');
+          if (hallField) {
+            hallField.component = 'Cascader';
+            hallField.componentProps = {
+              options: cascaderOptions.value,
+              placeholder: '请选择机构及大厅',
+              showSearch: true,
+              onChange: (value, selectedOptions) => {
+                // value 是 [orgId, hallId]
+                // selectedOptions 是 [{ label: orgName, value: orgId }, { label: hallName, value: hallId }]
+                const hallId = value?.[1] || null;
+                const hall_name = selectedOptions?.[1]?.label || '';
+                setFieldsValue({
+                  hallId,
+                  hall_name,
+                });
+              },
+            };
+          }
+        }
+      }
+    });
+  });
   // Emits声明
   const emit = defineEmits(['register', 'success']);
   const isUpdate = ref(true);

@@ -28,12 +28,7 @@ export const searchFormSchema: FormSchema[] = [
   {
     label: '文件名称',
     component: 'Input',
-    field: 'name',
-  },
-  {
-    label: '文件路径',
-    component: 'Input',
-    field: 'path',
+    field: 'fileName',
   },
 ];
 // 新建和编辑的表单数据
@@ -55,12 +50,6 @@ export const contentForm: FormSchema[] = [
     },
   },
 ];
-
-// 高级查询数据
-export const superQuerySchema = {
-  name: { title: '文件名称', order: 1, view: 'text', type: 'string' },
-  path: { title: '文件路径', order: 2, view: 'text', type: 'string' },
-};
 
 /**
  * 流程表单调用这个方法获取formSchema

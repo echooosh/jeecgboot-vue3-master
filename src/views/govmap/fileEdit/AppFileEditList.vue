@@ -1,15 +1,12 @@
 <template>
   <div>
     <!--引用表格-->
-    <BasicTable @register="registerTable" :rowSelection="rowSelection" @handle-search-info-change="searchInfoChange">
+    <BasicTable @register="registerTable" :rowSelection="rowSelection">
       <!--插槽:table标题-->
       <template #tableTitle>
         <a-button type="primary" @click="handleCreate" preIcon="ant-design:plus-outlined"> 新增</a-button>
         <a-button type="primary" preIcon="ic:round-expand" @click="expandAll">展开全部</a-button>
         <a-button type="primary" preIcon="ic:round-compress" @click="collapseAll">折叠全部</a-button>
-
-        <!-- 高级查询 -->
-        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
       </template>
       <!--操作栏-->
       <template #action="{ record }">
@@ -31,8 +28,8 @@
   import { useListPage } from '/@/hooks/system/useListPage';
   import AppFileEditModal from './components/AppFileEditModal.vue';
   import AppFileEditDrawer from './components/AppFileEditDrawer.vue';
-  import { columns, searchFormSchema, superQuerySchema } from './AppFileEdit.data';
-  import { getTreeFileListApi, deleteAppFileEditApi, searchFileApi } from './AppFileEdit.api';
+  import { columns, searchFormSchema } from './AppFileEdit.data';
+  import { getTreeFileListApi, deleteAppFileEditApi } from './AppFileEdit.api';
   const queryParam = reactive<any>({
     fileName: '',
     exactMatch: false,
@@ -69,53 +66,15 @@
       rowKey: 'path', // 把path当成rowKey
       beforeFetch: (params) => {
         params.hasQuery = 'true';
-        if (params.fileName || params.exactMatch) {
-          // 动态切换 API
-          setProps({ api: searchFileApi });
-
-          // 清洗一下 query 参数
-          return {
-            ...params,
-            fileName: queryParam.fileName,
-            exactMatch: queryParam.exactMatch,
-          };
-        }
-
         return params;
       },
     },
   });
   const [
     registerTable,
-    { reload, expandAll, setProps, collapseAll, updateTableDataRecord, findTableDataRecord, getDataSource },
+    { reload, expandAll, collapseAll, updateTableDataRecord, findTableDataRecord, getDataSource },
     { rowSelection, selectedRowKeys },
   ] = tableContext;
-
-  function searchInfoChange(searchParams) {
-    // 更新 queryParam，用于 beforeFetch 拼接参数
-    queryParam.fileName = searchParams.fileName;
-    queryParam.exactMatch = searchParams.exactMatch;
-
-    // 动态设置查询用的 API
-    setProps({ api: searchFileApi });
-
-    // 重新加载表格
-    reload();
-  }
-
-  // 高级查询配置
-  const superQueryConfig = reactive(superQuerySchema);
-
-  /**
-   * 高级查询事件
-   */
-  function handleSuperQuery(params) {
-    debugger;
-    Object.keys(params).map((k) => {
-      queryParam[k] = params[k];
-    });
-    reload();
-  }
 
   /**
    * 新增事件

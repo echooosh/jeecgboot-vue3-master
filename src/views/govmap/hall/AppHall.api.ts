@@ -4,14 +4,14 @@ import { useMessage } from "/@/hooks/web/useMessage";
 const { createConfirm } = useMessage();
 
 enum Api {
-  list = '/govmap/appHall/list',
+  list = '/govmap/appHall/list', // 查大厅列表
   save='/govmap/appHall/add',
   edit='/govmap/appHall/edit',
   deleteOne = '/govmap/appHall/delete',
   deleteBatch = '/govmap/appHall/deleteBatch',
   importExcel = '/govmap/appHall/importExcel',
   exportXls = '/govmap/appHall/exportXls',
-  queryOrgTreeList = "/govmap/appOrg/queryTreeList",
+  queryOrgTreeList = "/govmap/appOrg/queryTreeList", // 查机构列表
   queryItemByHallIdPage = "/govmap/appItem/queryByHallIdPage",
   queryItemByHallId = "/govmap/appItem/queryItemByHallId",
 

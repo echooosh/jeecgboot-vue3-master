@@ -96,7 +96,9 @@
               :total="totalRecord"
               show-quick-jumper
               :show-total="(total) => `共 ${total} 条`"
-              @change="getNoticeInfo"
+              @change="onPageChange"
+              show-size-changer
+              @show-size-change="onPageSizeChange"
             />
           </div>
         </a-card>
@@ -142,6 +144,15 @@
   import { Pagination } from 'ant-design-vue';
   import { getLoginTenantName, customsNameMap } from '/@/views/system/tenant/tenant.api';
 
+  const onPageSizeChange = (current, size) => {
+    pageSize.value = size;
+    getNoticeInfo(current); // 重新加载数据
+  };
+  const onPageChange = (page, pageSize) => {
+    pageSize.value = pageSize;
+    pageNum.value = page;
+    getNoticeInfo(); // 重新加载数据
+  };
   const router = useRouter();
   const APagination = Pagination;
   const loading = ref(true);
@@ -177,9 +188,7 @@
   const timelineItems = ref<TimeItem[]>([]);
   function getNoticeInfo() {
     getNoticeInfoApi({
-      appRelatedNotice: {
-        tenantId: getTenantId() ? getTenantId().toString() : '0',
-      },
+      tenantId: getTenantId() ? getTenantId().toString() : '0',
       pageNo: pageNum.value,
       pageSize: pageSize.value,
     }).then((res) => {

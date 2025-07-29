@@ -21,6 +21,16 @@ export const columns: BasicColumn[] = [
     dataIndex: 'materialFile',
   },
   {
+    title: '大厅ID',
+    align: 'center',
+    dataIndex: 'hallId',
+  },
+  {
+    title: '大厅名称',
+    align: 'center',
+    dataIndex: 'hallName',
+  },
+  {
     title: '发布状态',
     align: 'center',
     dataIndex: 'isOpen',
@@ -79,6 +89,23 @@ export const formSchema: FormSchema[] = [
     label: '公告内容',
     field: 'materialDesc',
     component: 'InputTextArea',
+  },
+  {
+    label: '大厅ID',
+    field: 'hallId',
+    component: 'Cascader',
+    componentProps: {
+      options: [],
+      placeholder: '请选择机构及大厅',
+    },
+  },
+  {
+    field: 'hall_name',
+    label: '大厅名称',
+    componentProps: {
+      disabled: true, // 设置为禁用
+    },
+    component: 'Input',
   },
   {
     label: '文件',

@@ -3,7 +3,7 @@ import { defHttp } from '/@/utils/http/axios';
 enum Api {
   create = '/sys/file/createFile', // 创建新文件 post overwrite: 创建或覆盖已存在文件
   save = '/sys/file/save', // 文件编辑-保存文件内容 post
-  Tree = '/sys/file/tree', // 文件编辑-树形结构 get
+  Tree = '/sys/file/fileTree', // 文件编辑-树形结构 get 不传fileName返回完整树，传fileName时精确搜索并返回包含匹配文件的目录树
   content = '/sys/file/content', // 文件编辑-获取文件内容 get
   delete = '/sys/file/delete', // 删除文件 delete
   search = '/sys/file/searchFile', // 根据文件名查询
