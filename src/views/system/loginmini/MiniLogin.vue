@@ -457,8 +457,9 @@
         setTimeout(() => {
           userStore.qrCodeLogin(tempToken);
         }, 500);
-
       }
+    } else if (redirect && redirect.includes('error')) {
+      return createMessage.error('该账号无权限，请联系管理员');
     }
   });
 </script>
