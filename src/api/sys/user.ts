@@ -95,6 +95,7 @@ export function getUserInfo() {
           redirect: router.currentRoute.value.fullPath,
         }
       });
+      createErrorModal({ title: '错误提示', content: e.message || '未知问题' });
       // update-end-author:sunjianlei date:20230306 for: 修复登录成功后，没有正确重定向的问题
 
     }
